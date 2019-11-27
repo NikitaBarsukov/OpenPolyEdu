@@ -1,3 +1,5 @@
+import datetime
+
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
@@ -22,12 +24,18 @@ def close_db_connection(connection):
         print("PostgreSQL connection is closed")
 
 
-def execute_query(connection, query):
-    connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+def execute_query(connection,
+                 query,
+                 endMessage="Query has been executed") -> list:
+    print('Start query execution at ', datetime.datetime.now())
     cursor = connection.cursor()
     cursor.execute(query)
-    connection.commit()
+    result = cursor.fetchall()
     cursor.close()
+    connection.commit()
+    print('End query execution at ', datetime.datetime.now())
+    print(endMessage)
+    return result
 
 
 def create_database(connection, database_name):
